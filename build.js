@@ -17,29 +17,29 @@ function findClosingBrace(string) {
   return null;
 }
 
-function transformToUseC(args) {
+function transformToUsePython(args) {
   const content = fsButWihtoutPromises.readFileSync(args.path, "utf8");
-  const splits = content.split(/["']use c["'];/);
+  const splits = content.split(/["']use [pP]ython["'];/);
   let result = splits[0];
   for (let i = 1; i < splits.length; i++) {
     const endOfCCode = findClosingBrace(splits[i]);
     const cCode = splits[i].slice(0, endOfCCode);
-    result += `return runC("${encodeURIComponent(cCode)}");`;
+    result += `return runPython("${encodeURIComponent(cCode)}");`;
     result += splits[i].slice(endOfCCode, splits[i].length);
   }
   return result;
 }
 
-const useCPlugin = {
-  name: "use-c",
+const usePythonPlugin = {
+  name: "use-python",
   setup(build) {
     build.onLoad({ filter: /.js$/ }, (args) => ({
-      contents: transformToUseC(args),
+      contents: transformToUsePython(args),
       loader: "js",
     }));
 
     build.onLoad({ filter: /.jsx$/ }, (args) => ({
-      contents: transformToUseC(args),
+      contents: transformToUsePython(args),
       loader: "jsx",
     }));
   },
@@ -56,7 +56,6 @@ async function build() {
   await fs.mkdir("dist", { recursive: true });
 
   console.log("Building project");
-  await sleep(Math.random() * 5000); // gotta keep up with the trends
 
   await esbuild.build({
     entryPoints: ["client.jsx"],
@@ -64,7 +63,7 @@ async function build() {
     minify: true,
     bundle: true,
     sourcemap: true,
-    plugins: [useCPlugin],
+    plugins: [usePythonPlugin],
   });
 
   await fs.cp("index.html", "dist/index.html");

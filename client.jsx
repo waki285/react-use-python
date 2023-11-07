@@ -20,7 +20,7 @@ ${strings[0]}
   return randomClassId;
 }
 
-async function runC(code) {
+async function runPython(code) {
   const res = await fetch("/rpc/rce", {
     method: "POST",
     body: JSON.stringify({ code: code }),
@@ -39,30 +39,29 @@ const appStyles = css`
 
 const App = () => (
   <div className={appStyles}>
-    <h1>React use C demo</h1>
+    <h1>React use Python demo</h1>
     <Demo />
   </div>
 );
 
 const Demo = () => {
   const [output, setOutput] = useState(null);
-  const cHelloWorld = async () => {
-    "use c";
-    #include <stdio.h>
-    int main() {
-      printf("Hello from C!\n");
-      return 0;
-    }
+  const pyHelloWorld = async () => {
+"use python";
+import numpy as np
+# 配列の平均値を計算
+arr = np.array([1, 2, 3, 4, 5])
+print(np.mean(arr))
   };
   const onClick = async () => {
-    const out = await cHelloWorld();
+    const out = await pyHelloWorld();
     setOutput(out.stdout);
   };
 
   return (
     <div>
-      <button onClick={onClick}>Run C code!</button>
-      <p>Output from C:</p>
+      <button onClick={onClick}>Run Python code!</button>
+      <p>Output from Python:</p>
       <pre>{ output }</pre>
     </div>
   );
